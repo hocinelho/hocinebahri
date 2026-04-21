@@ -1,0 +1,17 @@
+{
+  "name": "Staff Check-in",
+  "short_name": "Check-in",
+  "description": "Restaurant staff discount check-in",
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#0d0f18",
+  "theme_color": "#0d0f18",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

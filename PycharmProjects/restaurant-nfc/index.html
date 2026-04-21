@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Staff Check-in</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+
+</head>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
+
+<body>
+
+  <div id="screen-idle" class="screen active">
+    <div id="idle-top">
+      <span id="idle-date"></span>
+      <span id="idle-count">0 today</span>
+    </div>
+    <div id="idle-center">
+      <div id="ring-3" class="ring"></div>
+      <div id="ring-2" class="ring"></div>
+      <div id="ring-1" class="ring"></div>
+      <div id="nfc-core">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="10" stroke="currentColor" stroke-width="4"/>
+          <path d="M19 32 a13 13 0 0 1 26 0" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <path d="M11 32 a21 21 0 0 1 42 0" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <p id="idle-label">HOLD YOUR CARD</p>
+    <p id="nfc-status">Initialising...</p>
+    <button id="btn-admin-idle">&#9881;</button>
+  </div>
+
+  <div id="screen-result" class="screen">
+    <div id="result-inner">
+      <div id="result-icon-wrap">
+        <svg id="icon-ok" viewBox="0 0 80 80" fill="none">
+          <polyline points="16,42 32,58 64,24" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <svg id="icon-deny" viewBox="0 0 80 80" fill="none">
+          <line x1="20" y1="20" x2="60" y2="60" stroke="white" stroke-width="7" stroke-linecap="round"/>
+          <line x1="60" y1="20" x2="20" y2="60" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 id="result-title"></h1>
+      <p id="result-sub"></p>
+    </div>
+    <div id="result-timer-bar"><div id="result-timer-fill"></div></div>
+  </div>
+
+  <div id="screen-admin" class="screen">
+    <div id="admin-header">
+      <button id="btn-back">&larr; Back</button>
+      <h2>Today's Check-ins</h2>
+      <button id="btn-reset">Reset</button>
+    </div>
+    <div id="admin-body">
+      <div id="admin-stats">
+        <div class="stat-card">
+          <div id="stat-total" class="stat-num">0</div>
+          <div class="stat-lbl">Visits today</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-last" class="stat-num">-</div>
+          <div class="stat-lbl">Last check-in</div>
+        </div>
+      </div>
+      <div id="admin-table-wrap">
+        <table id="admin-table">
+          <thead><tr><th>#</th><th>Card UID</th><th>Time</th></tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+        <p id="admin-empty">No check-ins yet today.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pin-overlay" class="hidden">
+    <div id="pin-box">
+      <p id="pin-label">Admin PIN</p>
+      <div id="pin-dots">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div id="numpad">
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button>
+        <button data-v="4">4</button><button data-v="5">5</button><button data-v="6">6</button>
+        <button data-v="7">7</button><button data-v="8">8</button><button data-v="9">9</button>
+        <button data-v="del">&#9003;</button><button data-v="0">0</button><button data-v="ok" id="pin-ok">OK</button>
+      </div>
+      <p id="pin-err" class="hidden">Wrong PIN</p>
+      <button id="pin-cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
