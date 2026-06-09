@@ -1,0 +1,59 @@
+From aed81d99e464157365b06cbd68d5d83db8f3886d Mon Sep 17 00:00:00 2001
+From: Hocine Bahri <hocine.microelec@gmail.com>
+Date: Tue, 2 Jun 2026 05:13:39 +0000
+Subject: [PATCH] feat(upload): enable multi-file selection on the OTDR upload
+ button
+
+Add the 'multiple' attribute to #file-inp so 2-5 SOR/CSV/PDF files can be
+picked at once. Keep selFile and the active sidebar index (_sfi) in sync so
+each file's analysis result is stored on the correct slot, and re-point
+selFile on file navigation so ANALYSE always uploads the file in view.
+
+No change to GPS check, duplicate (SHA-256) protection, photo validation or
+company-notification logic.
+
+https://claude.ai/code/session_015QuSr3hfDDdsoUaEm1v1bK
+---
+ frontend/pwa/index.html | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/frontend/pwa/index.html b/frontend/pwa/index.html
+index 11a3d0f..4637b26 100644
+--- a/frontend/pwa/index.html
++++ b/frontend/pwa/index.html
+@@ -1623,7 +1623,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg0);color:var(--t1);font
+               <span class="fmt fmt-pdf">PDF</span>
+             </div>
+           </div>
+-          <input type="file" id="file-inp" accept=".sor,.csv,.pdf" style="display:none">
++          <input type="file" id="file-inp" accept=".sor,.csv,.pdf" multiple style="display:none">
+           <div class="file-chip" id="file-chip"><span>📄</span><span class="fc-name" id="fc-name">—</span><span class="fc-hash" id="fc-hash">—</span></div>
+           <div class="dup-warn" id="dup-warn">⚠ DUPLIKAT ERKANNT — Diese Datei wurde bereits hochgeladen!</div>
+           <div class="err-msg" id="err-msg"></div>
+@@ -4604,6 +4604,9 @@ function sfSwitch(idx) {
+   if (next) next.disabled = idx >= files.length - 1;
+   if (lbl)  lbl.textContent = (idx + 1) + ' / ' + files.length;
+   renderFileSidebar();
++  // Re-point the active file so ANALYSE uploads the file currently in view.
++  // pickFile sets selFile synchronously, so the analyse target is always correct.
++  if (files[idx] && typeof pickFile === 'function') pickFile(files[idx]);
+   if (files[idx] && files[idx]._result) {
+     populateAllTabs(files[idx]._result);
+   }
+@@ -4624,7 +4627,12 @@ window.nextFile = function() {
+     Array.from(this.files).forEach(f => {
+       if (!window._sf.find(x => x.name === f.name)) window._sf.push(f);
+     });
+-    window._sfi = window._sf.length - 1;
++    // Activate the first file of this selection so it matches selFile
++    // (set by the other change handler to this.files[0]); falls back to last.
++    const firstNew = this.files[0]
++      ? window._sf.findIndex(x => x.name === this.files[0].name)
++      : window._sf.length - 1;
++    window._sfi = firstNew >= 0 ? firstNew : window._sf.length - 1;
+     renderFileSidebar();
+     sfSwitch(window._sfi);
+   });
+-- 
+2.43.0
+
